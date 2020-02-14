@@ -3,6 +3,7 @@ let numbersGrid = [];
 let colorsContainerHTML = null;
 let hintRowsContainerHTML = null;
 let colorClassNames = ['red', 'green', 'cyan', 'blue', 'yellow', 'maroon', 'pink', 'purple'];
+let lastColorCellSelected = null;
 
 function initHTMLElements() {
     gridContainerHTML = document.querySelector('.grid');
@@ -21,7 +22,7 @@ function buildGrids() {
             const cell = document.createElement('span');
             cell.id = `cell_[${i},${j}]`;
             cell.classList.add('cells');
-            // btn.onclick = letterOnClickHandler;
+            cell.onclick = emptyColorCellOnClickHandler;
             row.appendChild(cell);
         }
         gridContainerHTML.appendChild(row);
@@ -46,11 +47,49 @@ function buildHintsGrid() {
 }
 
 function buildColorsBar() {
-    let color = null;
+    let colorCircle = null;
     for (let i = 0; i < 8; i++) {
-        color = document.createElement('span');
-        color.classList.add('cells', colorClassNames[i]);
-        colorsContainerHTML.appendChild(color);
+        colorCircle = document.createElement('span');
+        colorCircle.id = `${colorClassNames[i]}`;
+        colorCircle.classList.add('cells', colorClassNames[i]);
+        colorCircle.onclick = this.colorOnClickHandler;
+        colorsContainerHTML.appendChild(colorCircle);
+    }
+}
+
+function resetSelection() {
+    lastColorCellSelected.classList.remove('color-cell--selected');
+    lastColorCellSelected.classList.add('guess-cell--selected');
+    lastColorCellSelected = null;
+}
+
+function selectGuessColorCell(cellElement) {
+    if (lastColorCellSelected) {
+        cellElement.classList.add(lastColorCellSelected.id);
+        resetSelection();
+    }
+}
+
+function isColorCellSelected(cell) {
+    return cell.className.includes('guess-cell--selected');
+}
+
+function emptyColorCellOnClickHandler(e) {
+    const cell = e.target;
+    if (!isColorCellSelected(cell)) {
+        selectGuessColorCell(cell);
+    }
+}
+
+function colorOnClickHandler(e) {
+    const cell = e.target;
+    console.log(cell.id);
+    if (!isColorCellSelected(cell)) {
+        if (lastColorCellSelected) {
+            lastColorCellSelected.classList.toggle('color-cell--selected');
+        }
+        lastColorCellSelected = e.target;
+        lastColorCellSelected.classList.toggle('color-cell--selected');
     }
 }
 
